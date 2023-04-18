@@ -25,14 +25,14 @@ def run_dfs(maze, root_point, visited_points):
         current_point = s.pop()
         if current_point not in visited_points:
             visited_points.add(current_point)
-            if maze[current_point[0]][current_point[1]] == 'goal':
+            if maze[current_point[0]][current_point[1]] == 2:  # Changed goal value to integer
                 return get_path(current_point, neighbor_parent)
             else:
                 neighbors = get_neighbors(maze, current_point)
                 for neighbor in neighbors:
                     neighbor_parent[neighbor] = current_point
                     s.append(neighbor)
-    return []  # Return empty list if no path is found
+    return None  # Return None if no path is found
 
 
 def get_neighbors(maze, point):
@@ -41,7 +41,7 @@ def get_neighbors(maze, point):
     for (i, j) in [(1, 0), (-1, 0), (0, 1), (0, -1)]:
         new_row, new_col = row + i, col + j
         if 0 <= new_row < len(maze) and 0 <= new_col < len(maze[new_row]):
-            if maze[new_row][new_col] != 'wall':
+            if maze[new_row][new_col] != 1:  # Changed wall value to integer
                 neighbors.append((new_row, new_col))
     return neighbors
 
@@ -52,18 +52,22 @@ def get_path(point, neighbor_parent):
         path.append(point)
         point = neighbor_parent[point]
     path.reverse()
+    if path[0] != (1, 1):  # Check if start is part of the path
+        return None
     return path
 
 
 maze = [
-    ['wall', 'wall', 'wall', 'wall', 'wall'],
-    ['wall', 'start', ' ', ' ', 'wall'],
-    ['wall', ' ', 'wall', ' ', 'wall'],
-    ['wall', ' ', 'goal', ' ', 'wall'],
-    ['wall', 'wall', 'wall', 'wall', 'wall'],
+    [1, 1, 1, 1, 1],  # Changed wall value to integer
+    [1, 0, 0, 0, 1],
+    [1, 0, 1, 0, 1],
+    [1, 0, 2, 0, 1],  # Changed goal value to integer
+    [1, 1, 1, 1, 1],  # Changed wall value to integer
 ]
 start_point = (1, 1)
 visited_points = set()
 path = run_dfs(maze, start_point, visited_points)
-print(path)
-
+if path is not None:
+    print(path)
+else:
+    print("No path to goal")
